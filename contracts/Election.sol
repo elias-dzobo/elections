@@ -9,10 +9,32 @@ contract Election {
         uint voteCount;
     }
 
-    mapping (uint => Candidate ) public candidates;
+    // Voter Mode
+    struct Voter {
+        string email;
+        address wallet; 
+    }
 
+    mapping (uint => Candidate ) public candidates;
+    mapping (address => bool) public voters;
     //store candidate count
     uint public candidateCount;
+
+    event votedEvent (
+        uint indexed _candidateId
+    );
+
+    function vote(uint _candidateId) public {
+        require(!voters[msg.sender]);
+
+        require(_candidateId >0 && _candidateId <= candidateCount);
+
+        voters[msg.sender] = true;
+
+        candidates[_candidateId].voteCount ++;
+
+        emit votedEvent(_candidateId);
+    }
 
     function get() public view returns (uint) {
         return candidateCount;
